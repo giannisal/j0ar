@@ -11,7 +11,7 @@ public class Frequency {
 	    return idlink;
 	 }
 
-	 public void setIdWord(int idname){
+	 public void setIdWord(int idword){
 	 	    this.idword = idword;
 	 }
 	 public int getIdWord(){

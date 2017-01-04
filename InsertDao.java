@@ -16,7 +16,7 @@ public class InsertDao {
 	public void addFrequency(String link, String word) throws Exception {
 		Database db = new Database();
 		Connection con = null;
-		final String query = ("SELECT * FROM frequency GROUP BY idlink HAVING idlink = ?; ");
+		final String query = ("SELECT * FROM frequency WHERE idlink = ?; ");
 		final String query2 = ("UPDATE link SET frequence = (frequence + 1) WHERE idword=?;");
 		final String query3 = ("INSERT INTO frequency(idlink,idword,frequence) VALUES (?,?,1);");
 		checkIfExestedWord(word);
