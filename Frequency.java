@@ -2,7 +2,13 @@ public class Frequency {
 
 	 private int idword;
 	 private int idlink;
-	 private int frequence;
+	 private int frequency;
+
+	 public Frequency(int idword, int idlink, int frequency){
+		 this.idword = idword;
+		 this.idlink = idlink;
+		 this.frequency = frequency;
+	 }
 
 	 public void setIdLink(int idlink){
 	    this.idlink = idlink;
@@ -18,11 +24,11 @@ public class Frequency {
 	     return idword;
 	 }
 
-	 public void setFrequency(int frequence){
-			this.frequence = frequence;
+	 public void setFrequency(int frequency){
+			this.frequency = frequency;
 	 }
 	 public int getFrequency(){
-		 return frequence;
+		 return frequency;
      }
 
 
