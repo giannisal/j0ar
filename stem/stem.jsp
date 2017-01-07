@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.*, javax.servlet.*, joarLib.Joar_DB, joarLib.Siteword"%>
+<%@ page import="java.util.*, javax.servlet.*, joarLib.Joar_DB, joarLib.Siteword, joarLib.Sites"%>
 
 <%@ include file="header.jsp" %>
 
@@ -99,7 +99,10 @@ if (word.length()>=5) {
   Joar_DB database = new Joar_DB();
   database.open();
 
-  List<Siteword> sitewords = database.findWord(word);
+  String stem = '%' + word + '%';
+
+  List<Siteword> sitewords = database.findWord(stem);
+  Sites site2 = null;
 
   if (Boolean.FALSE.equals(database.validTrending(word))) {
     database.importTrending(word);
@@ -107,26 +110,34 @@ if (word.length()>=5) {
     database.updateTrending(word);
   }
 
-  database.close();
 %>
   <div class="container theme-showcase" role="main">
     <img class="img-responsive img-rounded center-block" src="../joar/logojoar.PNG" alt="j0ar Logo">
     <br>
     <h4>Αποτελέσματα αναζήτησης για: <b><%=preword%><span style="color:red;"><%=word%></span><%=sufword%></b></h4>
-    <%-- <%=word.substring(len-2, len-1)%> --%>
     <%
     if (!sitewords.isEmpty()) {
-      for (Siteword siteword : sitewords) {%>
-        <div class='alert alert-success' role='alert' style='text-align:center'>
-          <b>[<%=siteword.getWord()%>]</b>
-          <a href="<%=siteword.getSite()%>"><%=siteword.getSite()%></a>
-        </div>
+      for (Siteword siteword : sitewords) {
+        site2 = database.findSite(siteword.getSite());%>
+        <h3><a href="<%=site2.getSite()%>"><%=site2.getTitle()%></a></h3>
+        <p>
+          <% if (site2.getSite() != null) {%>
+            <span style="color:green;"><%=site2.getSite()%></span>
+          <%}%>
+
+          <% if (site2.getDescription() != null) {%>
+            - <%=site2.getDescription()%>
+          <%}%>
+        </p>
+        <p style="color:grey;">Relatives: <%=siteword.getWord()%></p>
+
       <%}
     } else {%>
       <div class='alert alert-warning' role='alert' style='text-align:center'>
         Δεν βρέθηκαν αποτελέσματα - Επιστρέψτε σύντομα
       </div>
-    <%}%>
+    <%}
+      database.close();%>
   </div> <!-- /container -->
 
 <%@ include file="footer.jsp" %>

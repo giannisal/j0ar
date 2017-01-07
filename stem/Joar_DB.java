@@ -150,18 +150,6 @@ public class Joar_DB {
 			 List<Siteword> list = new ArrayList<Siteword>();
 
 			 stmt2 = con.prepareStatement(selectSitewordQuery);
-			 // replacing the first ? with am, the second ? with
-			 // name and the third ? with surname.
-
-			//  if (findPrefix == false && findSuffix == false) {
-			//  		word = word;
-			// 	} else if (findPrefix == true && findSuffix == false) {
-			// 		word = word + "%";
-			// 	} else if (findPrefix == false && findSuffix == true) {
-			// 		word = "%" + word;
-			// 	} else {
-					word = "%" + word + "%";
-				// }
 
 			 stmt2.setString(1, word);
 			 // execute query
