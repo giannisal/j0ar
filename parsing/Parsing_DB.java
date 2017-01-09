@@ -23,6 +23,8 @@ public class Parsing_DB {
 		private final String importWordQuery = "INSERT INTO joar_word (word, frequency) VALUES (?,?);";
 		private final String updateWordQuery = "UPDATE joar_word SET frequency = frequency + 1 WHERE word=?;";
 
+		private final String updateKeywordQuery = "UPDATE joar_siteword SET keyword = 1 WHERE site=? and word=?;";
+
 	  public String getErrorMessages() {
 	  	return errorMessages;
   	  }
@@ -88,35 +90,10 @@ public class Parsing_DB {
 	    }
  	 }
 
-	 public List<Siteword> findWord(String word) throws Exception {
-
-		 if (con == null) {
-			 errorMessages = "You must establish a connection first!";
-			 throw new SQLException(errorMessages);
-		 }
-
-		 try {
-			 List<Siteword> list = new ArrayList<Siteword>();
-
-			 stmt = con.prepareStatement(selectWordQuery);
-			 // replacing the first ? with am, the second ? with
-			 // name and the third ? with surname.
-			 stmt.setString(1, word);
-			 // execute query
-			 rs = stmt.executeQuery();
-			 while (rs.next()) {
-				 Siteword words = new Siteword(rs.getString("site"), rs.getString("word"), rs.getInt("frequency"));
-				 list.add(words);
-			 }
-
-			 rs.close();
-			 stmt.close();
-
-			return list;
-		 } catch (Exception e) {
-		throw new Exception("Error: " + e.getMessage());
-	}
- }
+	 /**
+	 *H methodos returnAllSites epistrefei ola ta sites tis basis, pio sugkekrimena epistrefei mia lista tupou Sites
+	 *apo to konstraktora pou epistrefei mono to url site
+	 */
 
  public List<Sites> returnAllSites() throws Exception {
 
@@ -145,34 +122,11 @@ public class Parsing_DB {
 }
 }
 
-	 public Siteword findSiteword(String site, String word) throws Exception {
-
-	 if (con == null) {
-		 errorMessages = "You must establish a connection first!";
-		 throw new SQLException(errorMessages);
-	 }
-
-	 try {
-		 Siteword sitedata = null;
-		 stmt2 = con.prepareStatement(selectSitewordQuery);
-		 // replacing the first ? with am, the second ? with
-		 // name and the third ? with surname.
-		 stmt2.setString(1, site);
-		 stmt2.setString(2, word);
-		 // execute query
-		 rs = stmt2.executeQuery();
-		 while (rs.next()) {
-			 sitedata = new Siteword(rs.getString("site"), rs.getString("word"), rs.getInt("frequency"));
-		 }
-
-		 rs.close();
-		 stmt2.close();
-
-		return sitedata;
-	 } catch (Exception e) {
-	throw new Exception("Error: " + e.getMessage());
-}
- }
+	/**
+	*H methodos importSiteword eite eisagei ston pinaka siteword (pou periexei tis lexeis tou sigkekrimenou site pou exoun parsariste) tis basis to site kai ti lexi,
+	*me frequency = 1, afou i lexi brethike mia fora
+	*eite eite eisagei ston pinaka siteword tis basis to site kai to keyword tou site, me frequency = 0, afou mporei kai na min uparxei san lexi sto html to keword
+	*/
 
  public void importSiteword(String site, String word, int frequency) throws SQLException {
 
@@ -199,6 +153,11 @@ public class Parsing_DB {
  	 }
   }
 
+	/**
+	*H methodos importWord eisagei ston pinaka word (pou periexei oles tis lexeis olon ton site pou exoun parsariste),
+	*me frequency = 1, afou i lexi brethike mia fora
+	*/
+
 	public void importWord(String word, int frequency) throws SQLException {
 
 		if (con == null) {
@@ -221,6 +180,10 @@ public class Parsing_DB {
 			throw new SQLException(errorMessages);
 		}
 	 }
+
+	 /**H methodos importSites exei dothei kai xrisimopoieitai apo tous crawlers
+	 *gia na eisagoun ta sites pou briskoun ston pinaka sites tis basis
+	 */
 
 	public void importSites(String site) throws SQLException {
 
@@ -245,6 +208,10 @@ public class Parsing_DB {
 		}
 	 }
 
+	 /**
+	 *H methodos validSiteword elegxei eite an to site me ti lexi uparxoun ston pinaka siteword tis basis
+	 *an to site me to keyword uparxoun ston pinaka siteword tis basis
+	 */
 
 	public boolean validSiteword (String site, String word) throws Exception {
 
@@ -277,6 +244,10 @@ try {
  }
 }
 
+/**
+*H methodos validWord elegxei an i lexi tou site pou parsaroume uparxei ston pinaka siteword tis basis
+*/
+
 public boolean validWord (String word) throws Exception {
 
 if (con == null) {
@@ -307,6 +278,11 @@ throw new Exception("Error: " + e.getMessage());
 }
 }
 
+/**
+*H methodos updateSiteword ananeonei ton pinaka siteword tis basis,
+*me frequency = frequency + 1, afou i lexi uparxei idi sti vasi
+*/
+
 public void updateSiteword(String site, String word) throws SQLException {
 
 	 if (con == null) {
@@ -330,6 +306,40 @@ public void updateSiteword(String site, String word) throws SQLException {
 		 throw new SQLException(errorMessages);
 	 }
  }
+
+ /**
+ *H methodos updateKeyword ananeonei ton pinaka siteword tis basis,
+ *me keyword = 1 etsi oste na dixei oti i sigkekrimeni lexi einai kai keyword
+ */
+
+ public void updateKeyword(String site, String keyword) throws SQLException {
+
+ 	 if (con == null) {
+ 		 errorMessages = "You must establish a connection first!";
+ 		 throw new SQLException(errorMessages);
+ 	 }
+
+ 	 try {
+ 		 stmt5 = con.prepareStatement(updateKeywordQuery);
+
+ 		 stmt5.setString(1, site);
+ 		 stmt5.setString(2, keyword);
+
+ 		 // execute query
+ 		 stmt5.executeUpdate();
+ 		 stmt5.close();
+
+ 	 } catch (Exception e4) {
+ 		 errorMessages = "Error while inserting student to the database: <br>"
+ 				 + e4.getMessage();
+ 		 throw new SQLException(errorMessages);
+ 	 }
+  }
+
+	/**
+  *H methodos updateSite ananeonei ton pinaka siteword tis basis,
+  *bazontas ton neo titlo kai description tou site
+  */
 
  public void updateSite(String site, String title, String description) throws SQLException {
 
@@ -355,6 +365,11 @@ public void updateSiteword(String site, String word) throws SQLException {
  		 throw new SQLException(errorMessages);
  	 }
   }
+
+	/**
+	*H methodos updateWord ananeonei ton pinaka word tis basis,
+	*me frequency = frequency + 1, afou i lexi iparxei idi
+	*/
 
  public void updateWord(String word) throws SQLException {
 
