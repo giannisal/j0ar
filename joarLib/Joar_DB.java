@@ -135,7 +135,7 @@ public class Joar_DB {
 
 		 try {
 			 List<Siteword> list = new ArrayList<Siteword>();
-             String selectSitewordQuery = "SELECT distinct site FROM joar_siteword WHERE word LIKE ? ORDER BY Keyword DESC, frequency DESC;";
+             String selectSitewordQuery = "SELECT count(site) as countSites,sum(frequency) as countFrequency , sum(keyword) as sumKeyword,site FROM joar_siteword WHERE word LIKE ? group by  site  ORDER BY  countSites DESC, sumKeyword DESC, countFrequency DESC";
 			 PreparedStatement stmt = con.prepareStatement(selectSitewordQuery);
 
 			 stmt.setString(1, word);
